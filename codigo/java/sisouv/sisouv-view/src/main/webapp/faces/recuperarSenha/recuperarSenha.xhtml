@@ -1,0 +1,29 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="../template/commonLayout.xhtml"
+	xmlns:t="http://java.sun.com/jsf/core">
+	<ui:define name="content">
+		<h:form id="form">
+			<h:panelGrid columns="1" cellpadding="5" styleClass="tbLogin">
+
+				<h:outputLabel value="#{msg['label.recuperacao.senha']}" />
+
+				<h:outputText value="#{msg['label.esqueceu.senha']}" />
+				<h:outputText value="#{msg['label.ajuda.recuperar.senha']}" />
+
+				<h:outputLabel value="#{msg['label.email']}" />
+				<p:inputText />
+				<h:outputText value="#{msg['label.digite.email']}" />
+
+				<f:facet name="footer">
+					<p:commandButton value="#{msg['botao.enviar']}" />
+				</f:facet>
+
+			</h:panelGrid>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

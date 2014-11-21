@@ -1,0 +1,60 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/faces/template/commonLayout.xhtml"
+	xmlns:t="http://java.sun.com/jsf/core">
+	<ui:define name="content">
+		<h:form id="formConsultarManifestacao">
+			#{msg['textoConsultarManifestacao']}
+			<p:panel id="panelListaManifestacoes">
+				<h:panelGrid columns="2">
+					<p:outputLabel value="#{msg['label.numero.manifestacao']}" />
+					<p:inputText
+						value="#{consultaManifestacaoController.codigoManifestacao}" />
+				</h:panelGrid>
+				<p:separator />
+				<h:panelGrid columns="1">
+					<p:dataTable id="manifestacoesTableId" var="manifestacoesTableVar"
+						value="#{consultaManifestacaoController.listaManifestacaoUsuario}"
+						selection="#{consultaManifestacaoController.codigoManifestacao}"
+						rowKey="#{manifestacoesTableVar.idManifestacaoUsuario}"
+						paginator="true" rows="10"
+						paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+						lazy="true" style="width: 42em;"
+						emptyMessage="Nenhum registro encontrado">
+						<p:column headerText="#{msg['label.tab.numero']}"
+							style="width: 20%;">
+							<h:outputText
+								value="#{manifestacoesTableVar.idManifestacaoUsuario}" />
+						</p:column>
+						<p:column headerText="#{msg['label.tab.descricao']}"
+							style="width: 40%;">
+							<h:outputText
+								value="#{manifestacoesTableVar.descricaoManifestacao}" />
+						</p:column>
+						<p:column headerText="#{msg['labelData']}" style="width: 20%;">
+							<h:outputText value="#{manifestacoesTableVar.dataCadastro}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="#{msg['labelSituacao']}" style="width: 30%;">
+							<h:outputText
+								value="#{manifestacoesTableVar.tipoSituacao.descricaoTipoSituacao.toUpperCase()}" />
+						</p:column>
+					</p:dataTable>
+				</h:panelGrid>
+				<p:separator />
+				<h:panelGrid columns="2">
+					<p:commandButton value="#{msg['botaoConsultar']}"
+						update="panelListaManifestacoes"
+						action="#{consultaManifestacaoController.comandoPesquisar(consultaManifestacaoController.codigoManifestacao)}" />
+					<p:commandButton value="#{msg['botao.cancelar']}"
+						action="/faces/principal/telaInicial?faces-redirect=true" />
+				</h:panelGrid>
+				<br />
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

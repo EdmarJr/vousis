@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/faces/template/commonLayout.xhtml"
+	xmlns:t="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+
+		<h:form>
+		<h:messages styleClass="errorMessages" style="color:red;"/>
+			#{msg['label.recuperacao.senha']}<br />
+			<br />
+
+			<b>#{msg['label.esqueceusuasenha']}</b>
+			<br />
+					#{msg['label.texto']}
+			<br />
+			<br />
+			<h:outputLabel value="#{msg['label.email']}" for="email" />
+			<br />
+			<h:inputText value="#{senhaController.email}" id="email" size="60"
+				required="true">
+				<f:validateRegex for="email"
+					validatorMessage="#{msg['email.invalido.mensagem']}"
+					pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+			</h:inputText><br/>
+			#{msg['label.digiteoemail']}
+			<br/><br/>
+			<h:commandButton value="#{msg['botao.enviar']}"
+				action="#{senhaController.comandoEsqueciMinhaSenha(senhaController.email)}" />
+		</h:form>
+
+	</ui:define>
+</ui:composition>

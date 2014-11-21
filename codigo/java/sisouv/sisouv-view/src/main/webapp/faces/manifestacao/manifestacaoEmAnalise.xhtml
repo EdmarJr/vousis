@@ -1,0 +1,316 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/faces/template/commonLayout.xhtml"
+	xmlns:t="http://java.sun.com/jsf/core">
+	<ui:define name="content">
+		<h:outputScript library="primefaces" name="jquery/jquery.js" />
+		<script>
+		$(document).ready(function() {
+			$('.ui-wizard-step-title').each(function() {
+				$(this).click(function() {
+					nextClicarAba();
+					});
+			});
+		});
+
+		function nextClicarAba() {
+			w.next();
+		}
+	</script>
+		<h:head>
+	Manifestação em Análise
+	<link href="/sisouv/faces/template/css/estilo.css" rel="stylesheet"
+				type="text/css" />
+
+			<style type="text/css">
+@import url("estilo.css");
+</style>
+		</h:head>
+		<h:form>
+			<p:growl id="growl" showDetail="true" />
+			<h:panelGrid columns="1"
+				style="border: 1px solid;border-radius: 1em; margin:9px;padding:5px;"
+				title="Manifestação">
+
+				<h:panelGrid columns="2">
+					<h:panelGroup>
+						<p:outputLabel value="Manifestante: " />
+						<p:inputText id="nomeM" />
+					</h:panelGroup>
+					<h:panelGroup>
+						<p:outputLabel value="Nº da Manifestação: " />
+						<p:inputText id="idM" />
+					</h:panelGroup>
+				</h:panelGrid>
+				<p:outputLabel value="Descrição:" />
+				<h:panelGroup>
+					<p:inputTextarea id="manifestacao" autoResize="false" cols="62"
+						rows="5" style="resize: none;" />
+				</h:panelGroup>
+				<p:outputLabel value="Observação Interna" />
+				<p:inputTextarea id="obInterna" autoResize="false" cols="62"
+					rows="5" style="resize: none;" />
+			</h:panelGrid>
+			<h:panelGroup style="padding:7px">
+				<p:commandButton value="Editar Manifestação" onclick="dlg.show()" />
+			</h:panelGroup>
+			<!-- poup-up para edição da manifestação -->
+			<p:dialog widgetVar="dlg" modal="true" style="background:#FFFFFF"
+				resizable="false" header="Editar Manifestação">
+
+				<h:panelGrid id="editarM" columns="1" cellspacing="5">
+					<p:inputTextarea id="editM" autoResize="false" cols="50" rows="5"
+						style="resize: none;" />
+					<h:panelGroup style="alygn:right;">
+						<p:button value="Cadastrar" />
+						<p:button value="Sair" />
+					</h:panelGroup>
+				</h:panelGrid>
+
+			</p:dialog>
+		</h:form>
+		<h:form id="formulario" action="" style="padding:5px">
+			<!-- Panel para tratamento da manifestação -->
+			<p:wizard widgetVar="w" dinamic="true"
+				flowListener="#{manifestacaoAnaliseController.onFlowProcess}"
+				nextLabel="#{msg['label.proximo']}"
+				backLabel="#{msg['label.anterior']}">
+				<p:tab id="manifestante" title="Manifestante" onclick="w.next()">
+					<p:panel>
+						<p:outputLabel value="Dados do Manifestante" />
+						<p:separator style="margin-top: 0;" />
+						<p:panelGrid columns="4">
+
+							<p:outputLabel value="#{msg['label.pronome.tratamento']}"
+								for="proTratamento" />
+							<p:inputText id="proTratamento" readonly="true" />
+
+							<p:outputLabel value="#{msg['label.endereco']}" for="endereco" />
+							<p:inputText id="endereco" readonly="true" />
+
+							<p:outputLabel value="#{msg['label.nome']}" for="nome" />
+							<p:inputText id="nome" readonly="true" />
+
+							<p:outputLabel value="#{msg['label.cep']}" for="cep" />
+							<p:inputText id="cep" readonly="true" />
+						</p:panelGrid>
+						<p:panelGrid columns="2">
+
+							<p:outputLabel value="#{msg['label.sobrenome']}" for="sobrenome" />
+							<p:inputText id="sobrenome" readonly="true" />
+
+							<p:outputLabel value="#{msg['label.email']}" for="email" />
+							<p:inputText id="email" readonly="true" />
+
+							<p:outputLabel value="#{msg['label.cpf']}" for="cpf" />
+							<p:inputText id="cpf" readonly="true" />
+
+							<p:outputLabel value="#{msg['label.telefone']}" for="telefone" />
+							<p:inputText id="telefone" readonly="true" />
+
+							<p:outputLabel value="#{msg['label.profissao']}" for="profissao" />
+							<p:inputText id="profissao" readonly="true" />
+
+							<p:outputLabel value="#{msg['label.relacionamento.com.stj']}"
+								for="relacionamento" />
+							<p:inputText id="relacionamento" readonly="true" />
+
+						</p:panelGrid>
+					</p:panel>
+
+				</p:tab>
+				<!-- Aba para classificaçãop -->
+				<p:tab id="classificacao" title="Classificação" onclick="w.next()">
+					<p:panel>
+						<h:panelGroup>
+							<b style="margin-top: 0;">Assunto</b>
+							<p:separator style="margin-top: 0;" />
+						</h:panelGroup>
+						<h:panelGrid columns="2" cellpadding="3">
+							<p:outputLabel value="#{msg['label.categoria']}" />
+							<p:selectOneMenu>
+								<f:selectItem itemLabel="valor 1" />
+								<f:selectItem itemLabel="valor 2" />
+								<f:selectItem itemLabel="valor 3" />
+							</p:selectOneMenu>
+							<p:outputLabel value="#{msg['label.tipo']}" />
+							<p:selectOneMenu>
+								<f:selectItem itemLabel="valor 1" />
+								<f:selectItem itemLabel="valor 2" />
+								<f:selectItem itemLabel="valor 3" />
+							</p:selectOneMenu>
+							<p:outputLabel value="#{msg['label.assunto']}" />
+							<p:selectOneMenu>
+								<f:selectItem itemLabel="valor 1" />
+								<f:selectItem itemLabel="valor 2" />
+								<f:selectItem itemLabel="valor 3" />
+							</p:selectOneMenu>
+							<p:outputLabel value="#{msg['label.palavra.chave']}" />
+							<h:panelGroup>
+								<p:selectOneMenu id="pal_chave">
+									<f:selectItem itemLabel="Valor 2" />
+									<f:selectItem itemLabel="Valor 2" />
+									<f:selectItem itemLabel="Valor 2" />
+									<f:selectItem itemLabel="Valor 2" />
+								</p:selectOneMenu>
+								<p:commandButton value="+" style="font-weight: bold;margin:1em"
+									onclick="pop.show()" />
+								<h:selectBooleanCheckbox value="true" />
+								<p:outputLabel
+									value="Não há palavra-chave para essa manifestação" />
+							</h:panelGroup>
+						</h:panelGrid>
+						<p:dataTable id="tabela_palavra" style="border:1px solid" value="">
+							<p:column headerText="Palavras-chave">
+
+							</p:column>
+							<p:column headerText="Ação">
+								<p:selectBooleanCheckbox value="sim" />
+							</p:column>
+
+						</p:dataTable>
+						<h:panelGroup style="padding:7px">
+							<p:separator style="margin-top: 0;" />
+							<b style="margin-top: 0;">Questionário</b>
+						</h:panelGroup>
+						<p:panelGrid columns="2">
+							<p:outputLabel value="#{msg['label.manifestacao.despacho']}" />
+							<h:selectOneRadio>
+								<f:selectItem itemLabel="Sim" itemValue="true" />
+								<f:selectItem itemLabel="Não" itemValue="false" />
+							</h:selectOneRadio>
+							<p:outputLabel value="#{msg['label.manifestacao.acompanhada']}" />
+							<p:panelGrid columns="2">
+								<h:selectOneRadio>
+									<f:selectItem itemLabel="Sim" itemValue="true" />
+									<f:selectItem itemLabel="Não" itemValue="false" />
+								</h:selectOneRadio>
+								<p:selectOneMenu id="lista_manifes_acompanha">
+									<f:selectItem itemLabel="Valor 1" />
+									<f:selectItem itemLabel="Valor 2" />
+								</p:selectOneMenu>
+							</p:panelGrid>
+							<p:outputLabel value="#{msg['label.gerar.alerta']}" />
+							<p:selectOneMenu id="novaAnalise">
+								<f:selectItem itemLabel="Uma Semana" itemValue="1" />
+								<f:selectItem itemLabel="Um mês" itemValue="2" />
+								<f:selectItem itemLabel="2 meses" itemValue="3" />
+							</p:selectOneMenu>
+							<p:outputLabel value="#{msg['label.manifestacao.processo']}" />
+							<h:selectOneRadio id="existeProcesso">
+								<f:selectItem itemLabel="Sim" itemValue="true" />
+								<f:selectItem itemLabel="Não" itemValue="false" />
+							</h:selectOneRadio>
+						</p:panelGrid>
+						<p:outputLabel value="#{msg['label.processo']}" for="idProcesso" />
+						<p:inputText id="idProcesso" />
+					</p:panel>
+				</p:tab>
+				<p:tab id="responsavel" title="Responsáveis" onclick="w.next()">
+					<p:panel>
+						<p:separator />
+						<p:panelGrid columns="2">
+							<p:outputLabel
+								value="O conteúdo dessa manifestação é afeto as atribuições do STJ?"
+								for="atribuicaoSTJ" />
+							<h:selectOneRadio id="atribuicaoSTJ">
+								<f:selectItem itemLabel="Sim" itemValue="true" />
+								<f:selectItem itemLabel="Não" itemValue="false" />
+							</h:selectOneRadio>
+						</p:panelGrid>
+						<p:outputLabel value="#{msg['label.pesquisa.orgao']} "
+							for="pesqOrgao" />
+						<p:inputText id="pesqOrgao" />
+						<!-- Lista em arvore para seleção dos orgãos -->
+						<p:tree var="node" dynamic="false" selectionMode="single"
+							nodeSelectListener="ththththy" update="edicao"
+							expandAnim="FADE_IN" collapseAnim="FADE_OUT">
+							<p:treeNode>
+								<h:outputText value="sdfsfsfsdfsdfds" />
+							</p:treeNode>
+						</p:tree>
+					</p:panel>
+				</p:tab>
+				<p:tab id="resumo1" title="Resumo" onclick="w.next()">
+					<p:panel>
+						<b>Informações Importantes</b>
+						<p:separator />
+						<p:panelGrid columns="2">
+
+							<p:outputLabel value="#{msg['label.assunto']}" for="assunto" />
+							<p:inputText id="assunto" readonly="true" />
+
+							<p:outputLabel value="#{msg['label.manifestacao.desoacho']}"
+								for="despacho" />
+							<p:inputText id="despacho" readonly="true" />
+
+							<p:outputLabel value="#{msg['label.manifestacao.acompanhada']}"
+								for="acompanhada" />
+							<p:inputText id="acompanhada" readonly="true" />
+
+							<p:outputLabel value="#{msg['label.manifestaco.processo']}"
+								for="processo" />
+							<p:inputText id="processo" readonly="true" />
+
+							<p:outputLabel value="#{msg['label.palavra_chave']}"
+								for="palavraChave" />
+							<p:dataTable id="palavraChave">
+								<p:column headerText="Palavras-Chave">
+
+								</p:column>
+
+							</p:dataTable>
+
+							<p:outputLabel value="#{msg['label.manifestacao.responsavel']}"
+								for="tab_responsavel" />
+							<p:dataTable id="tab_responsavel">
+								<p:column headerText="Unidades/Orgãos Responsáveis">
+								</p:column>
+							</p:dataTable>
+
+						</p:panelGrid>
+
+					</p:panel>
+				</p:tab>
+				<p:tab id="tratamento" title="Tratamento" onclick="w.next()">
+					<p:panel>
+						<p:panelGrid columns="1">
+							<p:outputLabel value="#{msg['label.unidade.resposta']}"
+								for="textResposta" />
+							<p:inputTextarea id="textResposta" autoResize="false" cols="62"
+								rows="5" style="resize: none;" />
+
+							<p:outputLabel value="#{msg['label.resposta.ouvidoria']}"
+								for="textRespostaOuvidoria" />
+							<p:inputTextarea id="textRespostaOuvidoria" autoResize="false"
+								cols="62" rows="5" style="resize: none;" />
+							<h:panelGroup>
+								<p:separator style="margin-top: 0;" />
+								<b style="margin-top: 0;">Encaminhar para unidade
+									Responsável</b>
+								<p:separator style="margin-top: 0;" />
+							</h:panelGroup>
+							<h:selectOneRadio id="selecOpcao">
+								<f:selectItem itemLabel="#{msg['boolean.encaminhar.opcao1']}" />
+								<f:selectItem itemLabel="#{msg['boolean.encaminhar.opcao2']}" />
+								<p:ajax event="onChange"/>
+								
+															<
+							</h:selectOneRadio>
+						</p:panelGrid>
+						<p:panel id="enviarUnidadeOrgao">
+						<p:outputLabel value="Faz alguma coisa "/>
+						<p:outputLabel value="label.data.resposta" for="dtResposta"/>
+						<p:inputText id="dtResposta" readonly="true"/>
+						</p:panel>
+						
+						<p:button value="#{msg['label.encaminhar.responsavel']}" style="align:right"/>
+					</p:panel>
+				</p:tab>
+			</p:wizard>
+		</h:form>
+	</ui:define>
+</ui:composition>

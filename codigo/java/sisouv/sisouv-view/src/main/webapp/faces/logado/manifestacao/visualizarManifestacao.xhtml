@@ -1,0 +1,84 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/faces/template/commonLayout.xhtml"
+	xmlns:t="http://java.sun.com/jsf/core">
+	
+	<ui:define name="content">
+
+		<h:form id="formVisualizarManifestacao">
+		 	
+		 	<style>
+				.label{width:145px; }
+			</style>
+			    	 
+			<p:panel id="panelDescricaoManifestação">
+						             
+				<!-- INÍCIO PANELGRID - DESCRIÇÃO DO PEDIDO --> 
+				<h:outputText value="#{msg['label.descricao.manifestacao']}" />
+				<p:separator style="margin-top: 0;" />
+			          	
+				<!-- INÍCIO LINHA  -->
+				<h:panelGrid columns="3" columnClasses="label, value">							
+					<p:outputLabel value="#{msg['label.tipo']}"/>
+				    <p:outputLabel value="#{visualizacaoManifestacaoController.manifestacao.tipoManifestacao.nomeTipoManifestacao}"
+				    			  styleClass="outputLabel" />
+				</h:panelGrid>
+				<!-- FIM LINHA  -->		               
+			          	
+				<h:panelGrid columns="3" columnClasses="label, value">							
+				<p:outputLabel value="#{msg['label.descricao']}" />
+				<p:outputLabel value="#{visualizacaoManifestacaoController.manifestacao.dsManifestacao}" 
+				    			  styleClass="outputLabel" />
+				</h:panelGrid>
+				<!-- FIM PANELGRID - DESCRIÇÃO DO PEDIDO -->
+			           
+			           <br />
+				<!-- INÍCIO PANELGRID - DADOS DO REQUERENTE --> 
+				<h:outputText value="#{msg['label.informacoes']}" />
+				<p:separator style="margin-top: 0;" />
+			
+				<h:panelGrid columns="3" columnClasses="label, value">							
+					<p:outputLabel value="#{msg['label.manifestante']}" />
+					<p:outputLabel value="#{visualizacaoManifestacaoController.manifestacao.usuarioManifestacao.usuario.nome}"
+							styleClass="outputLabel"/>
+				</h:panelGrid>		               
+			           	
+				<h:panelGrid columns="3" columnClasses="label, value">							
+					<p:outputLabel value="#{msg['label.estado']}" />
+					<p:outputLabel value="#{visualizacaoManifestacaoController.manifestacao.usuarioManifestacao.enderecoRespostaManifestacao.endereco.municipio.uf.nomeUF}"
+									styleClass="outputLabel"/>
+				</h:panelGrid>
+<br/>		        
+		        <h:outputText value="#{msg['label.entrada']}" />
+				<p:separator style="margin-top: 0;" />
+			
+				<h:panelGrid columns="3" columnClasses="label, value">							
+					<p:outputLabel value="#{msg['label.forma']}" />
+					<p:outputLabel value=""
+							styleClass="outputLabel"/>	
+				</h:panelGrid>		               
+			           	
+				<h:panelGrid columns="3" columnClasses="label, value">							
+					<p:outputLabel value="#{msg['label.data']}" />
+					<p:outputLabel value="#{visualizacaoManifestacaoController.manifestacao.dataInclusaoFormatBr}"
+									styleClass="outputLabel"/>
+				</h:panelGrid>
+				<h:panelGrid columns="3" columnClasses="label, value">							
+					<p:outputLabel value="#{msg['label.hora']}" />
+					<p:outputLabel value="#{visualizacaoManifestacaoController.manifestacao.horarioInclusaoFormatBr}"
+									styleClass="outputLabel"/>
+				</h:panelGrid>
+			    
+			    <h:panelGrid columns="1">		         		
+		         	<input type="button" value="#{botao.voltar}" onclick="history.go(-1);" />
+		        </h:panelGrid> 
+			        
+			</p:panel>	
+		     
+		</h:form>
+
+	</ui:define>
+</ui:composition>

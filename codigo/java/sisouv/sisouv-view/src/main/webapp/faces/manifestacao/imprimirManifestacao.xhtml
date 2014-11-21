@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/faces/template/commonLayout.xhtml"
+	xmlns:t="http://java.sun.com/jsf/core">
+	<ui:define name="content">
+
+		<style>
+.label {
+	width: 145px;
+}
+</style>
+		<p:growl id="growl" sticky="true" showDetail="true" />
+		<h:head>
+		</h:head>
+		<h:form id=" imprimir">
+			<p:panelGrid>
+			 <h:selectManyCheckbox id="optImprimir">
+			 <f:selectItem itemLabel="#{msg['check.iomprimir.dados']}"/>
+			 <f:selectItem itemLabel="#{msg['check.imprimir.manifestacao']}"/>
+			 <f:selectItem itemLabel="#{msg['check.imprimir.resposta.unidade']}"/>
+			 <f:selectItem itemLabel="#{msg['check.imprimir.resposta.oubidoria']}"/>
+			 <f:selectItem itemLabel="#{msg['check.imprimir.observacao']}"/>
+			 </h:selectManyCheckbox>
+			
+			</p:panelGrid>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

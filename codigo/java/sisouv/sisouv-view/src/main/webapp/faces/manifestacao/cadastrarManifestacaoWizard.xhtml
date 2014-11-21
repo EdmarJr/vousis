@@ -1,0 +1,490 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/faces/template/commonLayout.xhtml"
+	xmlns:t="http://java.sun.com/jsf/core">
+
+	<ui:define name="content">
+		<script>
+			function preencherCep(cep) {
+				if(cep == '__.___-___' || cep == '') {
+					return;
+				}
+				cep = cep.replace('\.','');
+				cep = cep.replace('-','');
+				$.ajax({
+					url: 'http://correiosapi.apphb.com/cep/'+cep,
+					dataType: 'jsonp',
+					crossDomain: true,
+					timeout:1000,
+					contentType: 'application/json',
+					statusCode: {
+					    200: function(resultado) {
+						     definirEndereco([{name:'endereco.bairro', value: resultado.bairro}, {name: 'endereco.cidade', value : resultado.cidade}, {name: 'endereco.estado', value : resultado.estado},{name: 'endereco.logradouro', value : resultado.tipodelogradouro != null ? resultado.tipoDeLogradouro : ""  + ' ' +resultado.logradouro}]); 
+						     } // Ok
+					    ,400: function(msg) { 
+						    adicionarMensagemCepInvalido();  
+						    } // Bad Request
+					    ,404: function(msg) {
+						     adicionarMensagemCepInvalido(); 
+						     } // Not Found
+					  },
+				error:function(){ adicionarMensagemCepInvalido();},
+				});
+			}
+		</script>
+		<h:form>
+			<style>
+				.label {
+					width: 145px;
+				}
+			</style>
+			<p:growl id="growl" sticky="true" showDetail="true" />
+			<f:metadata>
+				<f:event type="preRenderView"
+					listener="#{cadastroManifestacaoController.definirCategoriaManifestacao(param['categoriaManifestacao'])}" />
+			</f:metadata>
+
+			<p:wizard showNavBar="false" widgetVar="myWizard"
+				flowListener="#{cadastroManifestacaoController.onFlowProcess}"
+				nextLabel="#{msg['label.proximo']}"
+				backLabel="#{msg['label.anterior']}">
+
+				<!-- INÍCIO TAB DADOS DO REQUERENTE -->
+				<p:tab id="tabDadosRequerente"
+					title="#{msg['label.dados.requerente']}">
+					<p:panel id="panelDadosRequerente">
+						<!-- INÍCIO - LOGADO COMO -->
+						<h:outputText value="#{msg['label.logado.como']}" />
+						<p:separator style="margin-top: 0;" />
+						<p:remoteCommand name="definirEndereco" update="nmEndereco nrCEP localUF localCidade"
+							immediate="true"
+							actionListener="#{cadastroManifestacaoController.behavior.definirEnderecoComParametrosNoRequest()}" />
+						<p:remoteCommand name="adicionarMensagemCepInvalido"
+							update="@(form :not(.noUpdate))" immediate="true"
+							actionListener="#{cadastroManifestacaoController.behavior.adicionarMensagemErroCepInvalido()}" />
+						<h:panelGrid
+							rendered="#{!cadastroManifestacaoController.usuarioExterno}"
+							columns="2" columnClasses="label, value">
+							<p:outputLabel value="#{msg['label.nome']}" for="nomeLogado" />
+							<p:inputText id="nomeLogado" style="width: 186px;"
+								value="#{cadastroManifestacaoController.usuario.nome}" />
+							<p:spacer />
+							<h:message for="nomeLogado" style="color: red;" />
+							<p:outputLabel value="#{msg['label.sobrenome']}"
+								for="sobrenomeLogado" />
+							<p:inputText id="sobrenomeLogado" style="width: 186px;"
+								value="#{cadastroManifestacaoController.usuario.sobrenome}" />
+							<p:spacer />
+							<h:message for="sobrenomeLogado" style="color: red;" />
+							<p:outputLabel value="#{msg['label.email']}" for="emailLogado" />
+							<p:inputText id="emailLogado" disabled="true"
+								style="width: 186px;"
+								value="#{cadastroManifestacaoController.usuario.email}" />
+							<p:spacer />
+							<h:message for="emailLogado" style="color: red;" />
+						</h:panelGrid>
+						<!-- INÍCIO LINHA NOME MANIFESTANTE -->
+						<h:panelGrid
+							rendered="#{cadastroManifestacaoController.usuarioExterno}"
+							columns="2" columnClasses="label, value">
+							<p:outputLabel value="#{msg['label.nome']}"
+								for="nomeManifestante" />
+							<p:inputText id="nomeManifestante" required="true"
+								onblur="colocarPrimeirasLetrasMaiusculas(this)"
+								style="width: 186px;"
+								value="#{cadastroManifestacaoController.usuario.nome}"
+								requiredMessage="#{msg['campo.preenchimento.obrigatorio.mensagem']}" />
+							<p:spacer />
+							<h:message for="nomeManifestante" style="color: red;" />
+
+							<p:outputLabel value="#{msg['label.sobrenome']}" for="sobrenome" />
+							<p:inputText id="sobrenome" required="true" style="width: 186px;"
+								onblur="colocarPrimeirasLetrasMaiusculas(this)"
+								value="#{cadastroManifestacaoController.usuario.nmSobrenome}"
+								requiredMessage="#{msg['campo.preenchimento.obrigatorio.mensagem']}" />
+							<p:spacer />
+							<h:message for="sobrenome" style="color: red;" />
+
+							<p:outputLabel value="#{msg['label.email']}" for="email" />
+							<h:inputText id="email"
+								value="#{cadastroManifestacaoController.usuario.txEmail}"
+								required="true"
+								validatorMessage="#{msg['email.invalido.mensagem']}">
+								<f:validateRegex
+									pattern="[\w\.-]*[a-zA-Z0-9_]@(?!stj.jus.br)[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+							</h:inputText>
+							<p:spacer />
+							<h:message for="email" style="color: red;" />
+
+							<p:outputLabel value="#{msg['label.senha']}"
+								rendered="#{empty cadastroManifestacaoController.usuarioLogado}"
+								for="senha" />
+							<p:password id="senha" styleClass="noUpdate"
+								rendered="#{empty cadastroManifestacaoController.usuarioLogado}"
+								value="#{cadastroManifestacaoController.usuario.txSenhaManifestante}"
+								feedback="false"
+								label="#{msg['campo.preenchimento.obrigatorio.mensagem']}"
+								style="width: 186px;" match="confirmarSenha" required="true" />
+							<p:spacer />
+							<h:message for="senha" style="color: red;"
+								rendered="#{empty cadastroManifestacaoController.usuarioLogado}" />
+
+							<h:outputLabel value="#{msg['label.confirmar.senha']}"
+								rendered="#{empty cadastroManifestacaoController.usuarioLogado}" />
+							<p:password id="confirmarSenha" styleClass="noUpdate"
+								rendered="#{empty cadastroManifestacaoController.usuarioLogado}"
+								value="#{cadastroManifestacaoController.senhaConfirmada}"
+								feedback="false" label="#{msg['senha.invalida.mensagem']}"
+								requiredMessage="#{msg['campo.preenchimento.obrigatorio.mensagem']}"
+								style="width: 186px;" required="true" />
+							<p:spacer />
+							<h:message for="confirmarSenha" style="color: red;"
+								rendered="#{empty cadastroManifestacaoController.usuarioLogado}" />
+
+							<p:outputLabel value="#{msg['label.cpf']}" for="nrCPF"
+								rendered="#{empty cadastroManifestacaoController.usuarioLogado}" />
+							<p:inputMask
+								value="#{cadastroManifestacaoController.usuario.nrCPF}"
+								rendered="#{empty cadastroManifestacaoController.usuarioLogado}"
+								required="#{param['categoriaManifestacao'] == 'LAI'}"
+								mask="999.999.999-99" id="nrCPF" style="width: 186px;"
+								maxlength="11" converter="removePontuacaoConverter" />
+						</h:panelGrid>
+
+						<!-- INÍCIO PANELGRID - DADOS REQUERENTE - PESSOA FÍSICA -->
+						<br />
+						<h:outputText value="#{msg['label.dados.requerente.pf']}" />
+						<p:separator style="margin-top: 0;" />
+
+						<!-- INÍCIO LINHA PRONOME TRATAMENTO -->
+						<h:panelGrid columns="2" columnClasses="label, value">
+							<p:outputLabel value="#{msg['label.pronome.tratamento']}"
+								for="localPronomeTratamento" />
+							<h:selectOneMenu
+								value="#{cadastroManifestacaoController.usuario.pronomeTratamento}"
+								id="localPronomeTratamento" required="true"
+								style="width: 186px;"
+								requiredMessage="#{msg['campo.preenchimento.obrigatorio.mensagem']}">
+								<f:selectItem itemLabel="#{msg['combo.selecione']}" />
+								<f:selectItems
+									value="#{cadastroManifestacaoController.parametros.listaPronomeTratamento}"
+									var="listaPronomeTratamento"
+									itemLabel="#{listaPronomeTratamento.nomePronome}"
+									itemValue="#{listaPronomeTratamento}" />
+							</h:selectOneMenu>
+							<p:spacer />
+							<h:message for="localPronomeTratamento" style="color: red;" />
+
+							<p:outputLabel value="#{msg['label.uf']}" for="localUF" />
+							<h:selectOneMenu
+								disabled="#{!cadastroManifestacaoController.usuarioExterno or cadastroManifestacaoController.behavior.ufMunicipioDesabilitados}"
+								value="#{cadastroManifestacaoController.endereco.municipio.uf}"
+								id="localUF" required="true" styleClass="uf"
+								style="width: 186px;"
+								requiredMessage="#{msg['campo.preenchimento.obrigatorio.mensagem']}">
+								<f:selectItem itemLabel="#{msg['combo.selecione']}" />
+								<f:selectItems value="#{cadastroManifestacaoController.parametros.listaUF}"
+									var="listaUF" itemLabel="#{listaUF.siglaUF}"
+									itemValue="#{listaUF}" />
+								<p:ajax event="change"
+									listener="#{cadastroManifestacaoController.behavior.definirComportamentoDoComboMunicipio()}"
+									update="localCidade">
+								</p:ajax>
+							</h:selectOneMenu>
+							<p:spacer />
+							<h:message for="localUF" style="color: red;" />
+
+							<p:outputLabel value="#{msg['label.municipio']}" />
+							<h:selectOneMenu styleClass="municipio"
+								value="#{cadastroManifestacaoController.endereco.municipio}"
+								disabled="#{cadastroManifestacaoController.behavior.comboMunicipioDesabilitado or (!cadastroManifestacaoController.usuarioExterno) or cadastroManifestacaoController.behavior.ufMunicipioDesabilitados}"
+								id="localCidade" required="true" style="width: 186px;"
+								requiredMessage="#{msg['campo.preenchimento.obrigatorio.mensagem']}">
+								<f:selectItem itemLabel="#{msg['combo.selecione']}" />
+								<f:selectItems
+									value="#{cadastroManifestacaoController.parametros.listaMunicipio}"
+									var="listaCidade" itemLabel="#{listaCidade.nomeMunicipio}"
+									itemValue="#{listaCidade}" />
+							</h:selectOneMenu>
+							<p:spacer />
+							<h:message for="localCidade" style="color: red;" />
+
+							<p:outputLabel
+								value="#{msg['label.como.deseja.receber.resposta']}"
+								for="localTipoResposta" />
+							<h:selectOneMenu
+								value="#{cadastroManifestacaoController.manifestacao.usuarioManifestacao.tipoResposta}"
+								id="localTipoResposta" style="width: 186px;" required="true">
+								<f:selectItem itemLabel="#{msg['combo.selecione']}" />
+								<f:selectItems
+									value="#{cadastroManifestacaoController.parametros.listaTipoResposta}"
+									var="listaTipoResposta"
+									itemLabel="#{listaTipoResposta.nomeTipoResposta}"
+									itemValue="#{listaTipoResposta}" />
+								<f:ajax event="change" render="nrCEP nmEndereco labelEndereco labelCep"
+									listener="#{cadastroManifestacaoController.behavior.onChangeTipoResposta()}"></f:ajax>
+							</h:selectOneMenu>
+							<p:spacer />
+							<h:message for="localTipoResposta" style="color: red;" />
+
+							<p:outputLabel id="labelEndereco" value="#{msg['label.endereco']}" for="nmEndereco" />
+							<p:inputText
+								disabled="#{!cadastroManifestacaoController.usuarioExterno}"
+								required="#{cadastroManifestacaoController.behavior.enderecoObrigatorio}"
+								value="#{cadastroManifestacaoController.endereco.logradouro}"
+								styleClass="logradouro" id="nmEndereco" style="width: 186px;" />
+
+							<p:outputLabel id="labelCep" value="#{msg['label.cep']}" for="nrCEP" />
+							<p:inputMask mask="99.999-999" id="nrCEP" style="width: 186px;"
+								onblur="preencherCep(this.value)" styleClass="cep"
+								disabled="#{!cadastroManifestacaoController.usuarioExterno}"
+								required="#{cadastroManifestacaoController.behavior.enderecoObrigatorio}"
+								maxlength="8" converter="removePontuacaoConverter"
+								value="#{cadastroManifestacaoController.endereco.cep}" />
+
+							<p:outputLabel value="#{msg['label.telefone']}" for="nrTelefone" />
+							<p:inputMask mask="(999)9999-9999" id="nrTelefone"
+								disabled="#{!cadastroManifestacaoController.usuarioExterno}"
+								style="width: 186px;" maxlength="11"
+								converter="removePontuacaoConverter"
+								value="#{cadastroManifestacaoController.manifestacao.usuarioManifestacao.enderecoRespostaManifestacao.endereco.telefone}" />
+
+							<p:outputLabel value="#{msg['label.seu.relacionamento.stj']}"
+								for="localTipoReLacionamento" />
+							<h:selectOneMenu
+								disabled="#{!cadastroManifestacaoController.usuarioExterno}"
+								value="#{cadastroManifestacaoController.manifestacao.usuarioManifestacao.tipoRelacionamento}"
+								id="localTipoReLacionamento" style="width: 186px;"
+								required="true">
+								<f:selectItem itemLabel="#{msg['combo.selecione']}" />
+								<f:selectItems
+									value="#{cadastroManifestacaoController.parametros.listaTipoRelacionamento}"
+									var="listaTipoRelacionamento"
+									itemLabel="#{listaTipoRelacionamento.nomeTipoRelacionamento}"
+									itemValue="#{listaTipoRelacionamento}" />
+							</h:selectOneMenu>
+							<p:spacer />
+							<h:message for="localTipoReLacionamento" style="color: red;" />
+
+							<p:outputLabel
+								rendered="#{cadastroManifestacaoController.usuarioExterno}"
+								value="#{msg['label.profissao']}" for="localProfissao" />
+							<h:selectOneMenu
+								disabled="#{!cadastroManifestacaoController.usuarioExterno}"
+								rendered="#{cadastroManifestacaoController.usuarioExterno}"
+								value="#{cadastroManifestacaoController.usuario.profissao}"
+								id="localProfissao" style="width: 186px;">
+								<f:selectItem itemLabel="#{msg['combo.selecione']}" />
+								<f:selectItems
+									value="#{cadastroManifestacaoController.parametros.listaProfissao}"
+									var="listaProfissao"
+									itemLabel="#{listaProfissao.nomeProfissao}"
+									itemValue="#{listaProfissao}" />
+							</h:selectOneMenu>
+
+							<!-- <p:outputLabel
+							 	rendered="#{empty cadastroManifestacaoController.usuarioLogado}"
+								value="#{msg['label.escolaridade']}" for="localEscolaridade" /> -->
+							<h:selectOneMenu>
+								<!--  rendered="#{empty cadastroManifestacaoController.usuarioLogado}"
+								value="#{cadastroManifestacaoController.usuario.escolaridade}" 
+								id="localEscolaridade" style="width: 186px;"> -->
+								<f:selectItem itemLabel="#{msg['combo.selecione']}" />
+								<f:selectItems></f:selectItems>
+								<!-- 	value="#{cadastroManifestacaoController.parametros.listaEscolaridade}"
+									var="listaEscolaridade"
+									itemLabel="#{listaEscolaridade.nomeEscolaridade}"
+									itemValue="#{listaEscolaridade}"  --> 
+							</h:selectOneMenu>
+						</h:panelGrid>
+						<!-- FIM PANELGRID - DADOS REQUERENTE - PESSOA FÍSICA -->
+
+					</p:panel>
+					<p:commandButton
+						rendered="#{not empty cadastroManifestacaoController.usuarioLogado}"
+						immediate="true" value="#{msg['botao.cancelar']}"
+						action="/faces/logado/manifestacao/manifestacao.xhtml?faces-redirect=true" />
+					<p:commandButton
+						rendered="#{cadastroManifestacaoController.behavior.botaoAtualizarVisivel}"
+						value="#{msg['botao.atualizar']}" update="@form"
+						action="#{cadastroManifestacaoController.comandoAtualizar()}" />
+					<p:commandButton value="#{msg['botao.cadastrar']}" update="@form"
+						rendered="#{empty cadastroManifestacaoController.usuarioLogado}"
+						action="#{cadastroManifestacaoController.comandoCadastrar()}" />
+					<p:commandButton value="#{msg['label.proximo']}" type="button"
+						onclick="myWizard.next();" />
+				</p:tab>
+				<!-- FIM TAB DADOS DO REQUERENTE -->
+
+				<!-- INÍCIO TAB DESCRIÇÃO DO PEDIDO -->
+				<p:tab id="tabDescricaoPedido"
+					title="#{msg['label.descricao.pedido']}">
+					<p:panel id="panelDescricaoPedido">
+
+						<h:panelGrid columns="2" columnClasses="label, value">
+							<p:outputLabel value="#{msg['label.tipo']}"
+								for="localTipoManifestacao" />
+							<h:selectOneMenu
+								value="#{cadastroManifestacaoController.manifestacao.tipoManifestacao}"
+								id="localTipoManifestacao" required="true" style="width: 186px;"
+								requiredMessage="#{msg['campo.preenchimento.obrigatorio.mensagem']}">
+								<f:selectItem itemLabel="#{msg['combo.selecione']}" />
+								<f:selectItems
+									value="#{cadastroManifestacaoController.parametros.listaTipoManifestacao}"
+									var="listaTipoManifestacao"
+									itemLabel="#{listaTipoManifestacao.nomeTipoManifestacao}"
+									itemValue="#{listaTipoManifestacao}" />
+							</h:selectOneMenu>
+							<p:spacer />
+							<h:message for="localTipoManifestacao" style="color: red;" />
+
+							<p:outputLabel value="#{msg['label.descricao']}"
+								for="dsManifestacao" />
+							<p:inputTextarea
+								value="#{cadastroManifestacaoController.manifestacao.dsManifestacao}"
+								rows="5" cols="30" maxlength="2000" required="true"
+								style="width: 186px;" id="dsManifestacao"
+								requiredMessage="#{msg['campo.preenchimento.obrigatorio.mensagem']}" />
+							<p:spacer />
+							<h:message for="dsManifestacao" style="color: red;" />
+
+							<p:outputLabel
+								value="#{msg['label.seu.pedido.referencia.outro']}"
+								for="sqTipoManifestacaoPai" />
+							<p:inputText
+								value="#{cadastroManifestacaoController.manifestacao.sqTipoManifestacaoPai}"
+								style="width: 186px;" id="sqTipoManifestacaoPai" />
+
+							<p:outputLabel
+								value="#{msg['label.numero.pedido.manifestacao.referenciada']}"
+								for="nrProcessoTramite" />
+							<p:inputText
+								value="#{cadastroManifestacaoController.manifestacao.nrProcessoTramite}"
+								style="width: 186px;" id="nrProcessoTramite" />
+
+						</h:panelGrid>
+
+					</p:panel>
+					<p:commandButton value="#{msg['label.anterior']}"
+						icon="ui-icon-arrow-1-e" iconPos="left" type="button"
+						onclick="myWizard.back();" />
+					<p:commandButton value="#{msg['label.proximo']}"
+						icon="ui-icon-arrow-1-e" iconPos="left" type="button"
+						onclick="myWizard.next();" />
+				</p:tab>
+				<!-- FIM TAB DESCRIÇÃO DO PEDIDO -->
+
+				<!-- INÍCIO TAB CONFIRMAÇÃO -->
+				<p:tab id="tabConfirmacao" title="#{msg['label.confirmacao']}">
+					<p:panel id="panelConfirmacao">
+
+						<!-- INÍCIO PANELGRID - DESCRIÇÃO DO PEDIDO -->
+						<h:outputText value="#{msg['label.descricao.manifestacao']}" />
+						<p:separator style="margin-top: 0;" />
+
+						<!-- INÍCIO LINHA  -->
+						<h:panelGrid columns="3" columnClasses="label, value">
+							<p:outputLabel value="#{msg['label.tipo']}" />
+							<p:outputLabel
+								value="#{cadastroManifestacaoController.manifestacao.tipoManifestacao.nomeTipoManifestacao}"
+								styleClass="outputLabel" />
+						</h:panelGrid>
+						<!-- FIM LINHA  -->
+
+						<h:panelGrid columns="3" columnClasses="label, value">
+							<p:outputLabel value="#{msg['label.descricao']}" />
+							<p:outputLabel
+								value="#{cadastroManifestacaoController.manifestacao.dsManifestacao}"
+								styleClass="outputLabel" />
+						</h:panelGrid>
+						<!-- FIM PANELGRID - DESCRIÇÃO DO PEDIDO -->
+
+						<br />
+						<!-- INÍCIO PANELGRID - DADOS DO REQUERENTE -->
+						<h:outputText value="#{msg['label.dados.requerente']}" />
+						<p:separator style="margin-top: 0;" />
+
+						<h:panelGrid columns="3" columnClasses="label, value">
+							<p:outputLabel value="#{msg['label.nome']}" />
+							<p:outputLabel
+								value="#{cadastroManifestacaoController.usuario.nome}"
+								styleClass="outputLabel" />
+						</h:panelGrid>
+
+						<h:panelGrid columns="3" columnClasses="label, value">
+							<p:outputLabel value="#{msg['label.sobrenome']}" />
+							<p:outputLabel
+								value="#{cadastroManifestacaoController.usuario.sobrenome}"
+								styleClass="outputLabel" />
+						</h:panelGrid>
+
+						<h:panelGrid columns="3" columnClasses="label, value" rendered="#{cadastroManifestacaoController.usuarioExterno}">
+							<p:outputLabel value="#{msg['label.cpf']}" />
+							<p:outputLabel
+								value="#{cadastroManifestacaoController.usuario.nome}"
+								styleClass="outputLabel" />
+						</h:panelGrid>
+
+						<h:panelGrid columns="3" columnClasses="label, value">
+							<p:outputLabel value="#{msg['label.uf']}" />
+							<p:outputLabel
+								value="#{cadastroManifestacaoController.endereco.municipio.uf.siglaUF}"
+								styleClass="outputLabel" />
+						</h:panelGrid>
+
+						<h:panelGrid columns="3" columnClasses="label, value">
+							<p:outputLabel value="#{msg['label.municipio']}" />
+							<p:outputLabel
+								value="#{cadastroManifestacaoController.endereco.municipio.nomeMunicipio}"
+								styleClass="outputLabel" />
+						</h:panelGrid>
+
+						<h:panelGrid columns="3" columnClasses="label, value">
+							<p:outputLabel value="#{msg['label.relacionamento.com.stj']}" />
+							<p:outputLabel
+								value="#{cadastroManifestacaoController.manifestacao.usuarioManifestacao.tipoRelacionamento.nomeTipoRelacionamento}"
+								styleClass="outputLabel" />
+						</h:panelGrid>
+						<!-- FIM PANELGRID - DADOS DO REQUERENTE -->
+
+					</p:panel>
+
+					<p:panel>
+
+					</p:panel>
+					<p:commandButton value="#{msg['label.anterior']}"
+						icon="ui-icon-arrow-1-e" iconPos="left" type="button"
+						onclick="myWizard.back();" />
+					<p:commandButton value="#{msg['botao.finalizar']}"
+						update="dialogConfirmar"
+						action="#{cadastroManifestacaoController.comandoIncluir()}" />
+				</p:tab>
+			</p:wizard>
+
+			<p:outputPanel id="dialogConfirmar" layout="block">
+				<p:dialog header="Mensagem" widgetVar="dialogShowIdManifestacao"
+					modal="true">
+					<h:outputFormat value="#{msg['msgrn0705']}" escape="false">
+						<f:param
+							value="#{cadastroManifestacaoController.manifestacao.getHorarioInclusaoFormatBr()}" />
+						<f:param
+							value="#{cadastroManifestacaoController.manifestacao.getDataInclusaoFormatBr()}" />
+						<f:param
+							value="#{cadastroManifestacaoController.manifestacao.getId()}" />
+					</h:outputFormat>
+					<h:panelGroup style="display:block; text-align:center">
+						<p:commandButton id="btnConfirmar"
+							action="/faces/logado/manifestacao/manifestacao.xhtml?faces-redirect=true"
+							value="#{msg['botao.confirmar']}" ajax="true" immediate="true" />
+					</h:panelGroup>
+				</p:dialog>
+			</p:outputPanel>
+
+
+		</h:form>
+
+	</ui:define>
+</ui:composition>

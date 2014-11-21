@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/faces/template/commonLayout.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:t="http://java.sun.com/jsf/core">
+	<ui:define name="content">
+		<h:form>
+			<c:if test="#{empty param['categoriaManifestacao']}">
+				<p:commandLink title="#{msg['label.cadastrarmanifestacao']}"
+					action="/faces/manifestacao/cadastrarManifestacaoWizard">
+					#{msg['label.cadastrarmanifestacao']}
+				</p:commandLink>
+			</c:if>
+			<c:if test="#{not empty param['categoriaManifestacao']}">
+				<p:commandLink title="#{msg['label.cadastrarmanifestacao']}"
+					action="/faces/manifestacao/cadastrarManifestacaoWizard?categoriaManifestacao=LAI">
+					#{msg['label.cadastrarmanifestacao']}
+				</p:commandLink>
+			</c:if>
+			<p:separator />
+			<p:commandLink title="#{msg['label.consultarmanifestacao']}"
+				action="/faces/logado/manifestacao/consultarManifestacao">
+				#{msg['label.consultarmanifestacao']}
+			</p:commandLink>
+			<br />
+		</h:form>
+	</ui:define>
+</ui:composition>

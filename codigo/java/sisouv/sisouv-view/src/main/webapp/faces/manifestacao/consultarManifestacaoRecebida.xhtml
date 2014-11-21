@@ -1,0 +1,59 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/faces/template/commonLayout.xhtml"
+	xmlns:t="http://java.sun.com/jsf/core">
+	<ui:define name="content">
+
+			<style>
+.label {
+	width: 145px;
+}
+</style>
+<p:growl id="growl" sticky="true" showDetail="true" />
+	<h:head><b>Manifestações Recebidas</b></h:head>
+	<p:panel id="ManifestacaoRecebida">
+	<h:form>
+		<p:dataTable id="ManifestacaoRecebidaTabela" paginatorAlwaysVisible="true" value="#{manifestaoRecebidaController.manifestacao}" var="c">
+			<p:column headerText="Nº da Manifestação">
+				<h:outputText value="#{c.nrProcessoTramite}" />
+			</p:column>
+			<p:column headerText="Categoria">
+			</p:column>
+			<p:column headerText="Descrição">
+			</p:column>
+			<p:column headerText="Responsável">
+			</p:column>
+			<p:column headerText="Situação">
+			</p:column>
+			<p:column headerText="Ação">
+			<h:selectBooleanCheckbox value="" />
+			</p:column>
+		</p:dataTable>
+		
+		<p:button style='align=right ' id="distManifestacao"  value="Distribuir Manifestação"></p:button>
+		
+		<p:panel id="detalharManifestacao" >
+		<p:panelGrid columns="1" style="''border:2'">
+		<h:outputLabel value="Detalhar Manifestação" />
+		<p:inputText id="id_manifestacao" readonly="true"></p:inputText>
+		<p:inputTextarea id="manifestacao" autoResize="false" cols="60" rows="9"></p:inputTextarea>
+		<h:panelGroup style='border:2'>
+		<p:button id="exibirM" value="Exibir Manifestação"/>
+		<p:button id="analizarM" value="Analizar Manifestação"></p:button>
+		<p:button id="imprimir" value="Imprimir"></p:button>
+		</h:panelGroup>
+		</p:panelGrid>
+		
+		</p:panel>
+		
+		
+		</h:form>
+	
+	</p:panel>
+	
+	
+	</ui:define>
+	</ui:composition>

@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	template="/faces/template/commonLayout.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:t="http://java.sun.com/jsf/core">
+	<ui:define name="content">
+		<h:form>
+			<div style="text-align: center;">
+				#{msg['textoTelaInicial.1']} <br /> <br />
+				#{msg['textoTelaInicial.2']}
+			</div>
+			<br />
+			<br />
+			<div>
+				<div>
+					<h:graphicImage
+						value="/faces/template/imagens/botao_composicao.jpg"
+						style="margin-left: 7em; " />
+					<h:graphicImage
+						value="/faces/template/imagens/botao_atribuicoes.jpg"
+						style="margin-left: 7em; " />
+				</div>
+				<div>
+					<h:graphicImage
+						value="/faces/template/imagens/botao_legislacao.jpg"
+						style="margin-left: 7em; " />
+					<p:commandLink title="#{msg['label.falecomaouvidoria']}"
+						action="/faces/logado/manifestacao/manifestacao">
+						<h:graphicImage
+							value="/faces/template/imagens/botao_faleComAOuvidoria.jpg"
+							style="margin-left: 7em; " />
+					</p:commandLink>
+				</div>
+				<div>
+					<p:commandLink title="#{msg['label.acessoinformacao']}"
+						action="/faces/logado/manifestacao/manifestacao?categoriaManifestacao=LAI">
+						<h:graphicImage
+							value="/faces/template/imagens/botao_acessoAInformacao.jpg"
+							style="margin-left: 7em; " />
+					</p:commandLink>
+					<h:graphicImage
+						value="/faces/template/imagens/botao_estatisticasDaOuvidoria.jpg"
+						style="margin-left: 7em; " />
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>
